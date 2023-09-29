@@ -1,9 +1,10 @@
-import { HostListener, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FungiLocation } from '../fungi-location.model';
 import { FungiLocationService } from '../fungi-location.service';
+import { DialogComponent } from '../dialog/dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 import * as L from 'leaflet';
 
-declare var ol: any;
 
 @Component({
   selector: 'app-fungi-map',
@@ -17,7 +18,10 @@ export class FungiMapComponent implements OnInit {
   ]; //tartu Ossu
   private markers: L.Marker[] = [];
 
-  constructor(private fungiLocationService: FungiLocationService) {}
+  constructor(
+    private fungiLocationService: FungiLocationService,
+    private dialog: MatDialog
+    ) {}
 
   ngOnInit(): void {
     this.initMap();
@@ -45,10 +49,44 @@ export class FungiMapComponent implements OnInit {
     this.map.on('click', (event: L.LeafletMouseEvent) => {
       const latitude = event.latlng.lat;
       const longitude = event.latlng.lng;
-      this.addMarkerToMap(latitude, longitude);
+      this.openMarkerDialog(latitude, longitude);
+    });
+  }
+
+  openMarkerDialog(latitude: number, longitude: number): void {
+    const dialogRef = this.dialog.open(DialogComponent, {
+      width: '400px',
+      data: { latitude, longitude },
     });
 
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const marker = L.marker([result.latitude, result.longitude], {
+          icon: this.fungiIcon,
+        }).addTo(this.map);
+
+        // Create a FungiLocation object based on dialog data
+        const fungiLocation: FungiLocation = {
+          type: result.type, // Mushroom type from the dialog
+          description: result.description, // Description from the dialog
+          coordinates: [result.latitude, result.longitude],
+        };
+
+        // Use the service to send the data to the backend
+        this.fungiLocationService.addLocation(fungiLocation).subscribe(
+          (response) => {
+            // Handle the response from the backend as needed
+            console.log('Location added:', response);
+          },
+          (error) => {
+            // Handle any errors that occur during the request
+            console.error('Error adding location:', error);
+          }
+        );
+      }
+    });
   }
+
 
   loadFungiLocations(): void {
     this.fungiLocationService.getAllLocations().subscribe((locations: FungiLocation[]) => {
@@ -60,30 +98,13 @@ export class FungiMapComponent implements OnInit {
 
 
   addMarkerToMap(latitude: number, longitude: number): void {
-    // Create a FungiLocation object based on marker's position
-    const fungiLocation: FungiLocation = {
-      type: 'Some Type', // Set the appropriate type
-      description: 'Some Description', // Set the description
-      coordinates: [latitude, longitude], // Set the coordinates
-    };
-
-    // Use the service to send the data to the backend
-    this.fungiLocationService.addLocation(fungiLocation).subscribe(
-      (response) => {
-        // Handle the response from the backend as needed
-        console.log('Location added:', response);
-      },
-      (error) => {
-        // Handle any errors that occur during the request
-        console.error('Error adding location:', error);
-      }
-    );
-
-    // Optionally, you can add the marker to a list or array for further use.
     const marker = L.marker([latitude, longitude], {
       icon: this.fungiIcon,
     }).addTo(this.map);
+    this.markers.push(marker);
   }
+
+
 
 
   fungiIcon = L.icon({

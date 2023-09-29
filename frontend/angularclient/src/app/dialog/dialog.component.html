@@ -1,0 +1,13 @@
+<mat-dialog-content>
+  <h2>Marker Details</h2>
+  <mat-form-field>
+    <input matInput placeholder="Mushroom Type" [(ngModel)]="type">
+  </mat-form-field>
+  <mat-form-field>
+    <textarea matInput placeholder="Description" [(ngModel)]="description"></textarea>
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-button (click)="onSave()">Save</button>
+</mat-dialog-actions>
