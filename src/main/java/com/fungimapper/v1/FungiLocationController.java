@@ -6,46 +6,46 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 @RestController
 
-public class GeoJSONController {
+public class FungiLocationController {
 
-    @Autowired GeoJSONRepository geoJSONRepository;
+    @Autowired
+    FungiLocationRepository fungiLocationRepository;
 
     @GetMapping("all-fungi")
     public ResponseEntity<List<FungiLocation>> getAllLocations(){
-        return ResponseEntity.ok().body(geoJSONRepository.findAll());
+        return ResponseEntity.ok().body(fungiLocationRepository.findAll());
     }
 
     @GetMapping("fungi/{id}")
     public ResponseEntity<FungiLocation> getOneLocation(@PathVariable Long id){
-        return ResponseEntity.ok().body(geoJSONRepository.findById(id).get());
+        return ResponseEntity.ok().body(fungiLocationRepository.findById(id).get());
     }
 
     @DeleteMapping("fungi/{id}")
     public ResponseEntity<List<FungiLocation>> deleteOneLocation(@PathVariable Long id){
-        geoJSONRepository.deleteById(id);
-        return ResponseEntity.ok().body(geoJSONRepository.findAll());
+        fungiLocationRepository.deleteById(id);
+        return ResponseEntity.ok().body(fungiLocationRepository.findAll());
     }
 
     @PostMapping("fungi")
     public ResponseEntity<List<FungiLocation>> addLocation(@RequestBody FungiLocation fungiLocation) {
-        if (fungiLocation.getId() == null || geoJSONRepository.findById(fungiLocation.getId()).isEmpty()) {
-            geoJSONRepository.save(fungiLocation);
+        if (fungiLocation.getId() == null || fungiLocationRepository.findById(fungiLocation.getId()).isEmpty()) {
+            fungiLocationRepository.save(fungiLocation);
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(geoJSONRepository.findAll());
+        return ResponseEntity.status(HttpStatus.CREATED).body(fungiLocationRepository.findAll());
     }
 
 
     @PutMapping("fungi")
     public ResponseEntity<List<FungiLocation>> editLocation(@RequestBody FungiLocation fungiLocation) {
-        if (geoJSONRepository.findById(fungiLocation.getId()).isPresent()) {
-            geoJSONRepository.save(fungiLocation);
+        if (fungiLocationRepository.findById(fungiLocation.getId()).isPresent()) {
+            fungiLocationRepository.save(fungiLocation);
         }
-        return ResponseEntity.ok().body(geoJSONRepository.findAll());
+        return ResponseEntity.ok().body(fungiLocationRepository.findAll());
     }
 
 }

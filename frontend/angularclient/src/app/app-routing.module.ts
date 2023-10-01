@@ -3,11 +3,12 @@ import { RouterModule, Routes } from '@angular/router';
 import { FungiMapComponent } from './fungi-map/fungi-map.component';
 
 const routes: Routes = [
-  {path: "fungi", component: FungiMapComponent}
+  { path: '', redirectTo: 'fungi', pathMatch: 'full' },
+  { path: 'fungi', component: FungiMapComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

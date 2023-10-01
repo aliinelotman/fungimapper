@@ -5,7 +5,6 @@ import { DialogComponent } from '../dialog/dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import * as L from 'leaflet';
 
-
 @Component({
   selector: 'app-fungi-map',
   templateUrl: './fungi-map.component.html',
@@ -21,7 +20,7 @@ export class FungiMapComponent implements OnInit {
   constructor(
     private fungiLocationService: FungiLocationService,
     private dialog: MatDialog
-    ) {}
+  ) {}
 
   ngOnInit(): void {
     this.initMap();
@@ -29,16 +28,23 @@ export class FungiMapComponent implements OnInit {
   }
 
   private initMap(): void {
+    // Define Estonia's boundaries
+    const maxBounds = L.latLngBounds(
+      L.latLng(57.5163, 21.0213), // Southwest corner of Estonia
+      L.latLng(59.675, 28.2096) // Northeast corner of Estonia
+    );
+
     this.map = L.map('map', {
       center: this.centroid,
-      zoom: 12,
+      zoom: 8,
+      maxBounds, // Set the maxBounds property
     });
 
     const tiles = L.tileLayer(
       'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       {
         maxZoom: 18,
-        minZoom: 10,
+        minZoom: 8,
         attribution:
           '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       }
@@ -67,19 +73,17 @@ export class FungiMapComponent implements OnInit {
 
         // Create a FungiLocation object based on dialog data
         const fungiLocation: FungiLocation = {
-          type: result.type, // Mushroom type from the dialog
-          description: result.description, // Description from the dialog
+          type: result.type,
+          description: result.description,
           coordinates: [result.latitude, result.longitude],
         };
 
-        // Use the service to send the data to the backend
+        // Use service to send data to the backend
         this.fungiLocationService.addLocation(fungiLocation).subscribe(
           (response) => {
-            // Handle the response from the backend as needed
             console.log('Location added:', response);
           },
           (error) => {
-            // Handle any errors that occur during the request
             console.error('Error adding location:', error);
           }
         );
@@ -87,15 +91,15 @@ export class FungiMapComponent implements OnInit {
     });
   }
 
-
   loadFungiLocations(): void {
-    this.fungiLocationService.getAllLocations().subscribe((locations: FungiLocation[]) => {
-      locations.forEach((location) => {
-        this.addMarkerToMap(location.coordinates[0], location.coordinates[1]);
+    this.fungiLocationService
+      .getAllLocations()
+      .subscribe((locations: FungiLocation[]) => {
+        locations.forEach((location) => {
+          this.addMarkerToMap(location.coordinates[0], location.coordinates[1]);
+        });
       });
-    });
   }
-
 
   addMarkerToMap(latitude: number, longitude: number): void {
     const marker = L.marker([latitude, longitude], {
@@ -104,16 +108,8 @@ export class FungiMapComponent implements OnInit {
     this.markers.push(marker);
   }
 
-
-
-
   fungiIcon = L.icon({
-    iconUrl: '../mushroom-icon.png', //EI TÖÖTA, 404?
-    iconSize: [38, 95], // size of the icon
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    popupAnchor: [-3, -76], // point from which the popup should open relative to the iconAnchor
+    iconUrl: 'assets/favicon.png',
+    iconSize: [15, 15],
   });
-
-
-
 }

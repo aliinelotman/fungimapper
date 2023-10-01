@@ -20,11 +20,17 @@ export class FungiLocationService {
   }
 
   addLocation(fungiLocation: FungiLocation): Observable<FungiLocation[]> {
-    return this.http.post<FungiLocation[]>(`${this.baseUrl}/fungi`, fungiLocation);
+    return this.http.post<FungiLocation[]>(
+      `${this.baseUrl}/fungi`,
+      fungiLocation
+    );
   }
 
   editLocation(fungiLocation: FungiLocation): Observable<FungiLocation[]> {
-    return this.http.put<FungiLocation[]>(`${this.baseUrl}/fungi`, fungiLocation);
+    return this.http.put<FungiLocation[]>(
+      `${this.baseUrl}/fungi`,
+      fungiLocation
+    );
   }
 
   deleteOneLocation(id: number): Observable<FungiLocation[]> {
