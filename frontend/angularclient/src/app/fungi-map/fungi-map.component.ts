@@ -78,8 +78,10 @@ export class FungiMapComponent implements OnInit {
           coordinates: [result.latitude, result.longitude],
         };
 
-        // Use service to send data to the backend
-        this.fungiLocationService.addLocation(fungiLocation).subscribe(
+        // Use service to send data to backend
+        this.fungiLocationService
+          .addLocation(fungiLocation)
+          .subscribe(
           (response) => {
             console.log('Location added:', response);
           },
